@@ -43,12 +43,21 @@ const MovieList = () => {
   const [loadingMovies, setLoadingMovies] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const [moviesList, setMoviesList] = useState<movieDetails[]>([]);
+  const [token, setToken] = useState<string | null>(null);
   const classes = useStyles();
   const router = useRouter();
   const { items } = usePagination({
     count: totalPages,
   });
   const isMobileView = useMediaQuery("(max-width:768px)");
+
+  useEffect(() => {
+    const newToken = localStorage.getItem("accessToken");
+    setToken(newToken);
+    if (!newToken) {
+      router.push("/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     GET(`movies?page=${pageNo}&limit=8`)
@@ -75,7 +84,7 @@ const MovieList = () => {
     }
   };
 
-  return (
+  return token ? (
     <>
       <Box
         sx={{
@@ -83,11 +92,12 @@ const MovieList = () => {
           minHeight: "100vh",
           height: "100%",
           maxWidth: "1200px",
-          margin:"0 auto",
+          margin: "0 auto",
           padding: isMobileView ? "80px 24px" : "120px",
-          display:"flex",
-          alignItems:"center",
-          justifyContent:"center"
+          display: "flex",
+          alignItems: moviesList.length ? "" : "center",
+          justifyContent: moviesList.length ? "" : "center",
+          marginBottom: isMobileView ? "45px" : "",
         }}
       >
         {loadingMovies ? (
@@ -102,7 +112,7 @@ const MovieList = () => {
             <CircularProgress />
           </div>
         ) : moviesList.length ? (
-          <Box>
+          <Box sx={{ width: "100%" }}>
             <Box
               sx={{
                 width: "100%",
@@ -195,7 +205,7 @@ const MovieList = () => {
                           width={0}
                           height={0}
                           sizes="100vw"
-                          style={{width:"100%", height:"100%"}}
+                          style={{ width: "100%", height: "100%" }}
                         />
                       </Box>
                       <Box
@@ -350,6 +360,8 @@ const MovieList = () => {
         )}
       </Box>
     </>
+  ) : (
+    <></>
   );
 };
 

@@ -53,7 +53,8 @@ const CreateMovie = () => {
     poster: "",
   });
   const navigate = useRouter();
-  const fileTypes = ["JPEG", "PNG", "GIF"];
+  const [token, setToken]=useState<string | null>(null);
+  const fileTypes = ["JPEG", "PNG", "GIF", "SVG"];
 
   const isMobileView = useMediaQuery("(max-width:768px)");
 
@@ -130,6 +131,15 @@ const CreateMovie = () => {
 
   const { errors, touched, setValues } = formik;
 
+  useEffect(()=>{
+    const newToken=localStorage.getItem("accessToken");
+    setToken(newToken);
+    if(!newToken)
+    {
+      navigate.push("/login");
+    }
+  },[navigate]);
+
   useEffect(() => {
     if (id.id) {
       setIsEdit(true);
@@ -149,7 +159,7 @@ const CreateMovie = () => {
   };
 
   const inputRef: any = useRef();
-  return (
+  return (token ?
     <Box sx={{ padding: "120px 20px" }}>
       <form onSubmit={formik.handleSubmit}>
         <Box
@@ -187,6 +197,7 @@ const CreateMovie = () => {
               opacity: "0",
               width: "0",
             }}
+            accept="image/*"
           />
           {!isMobileView && (
             <Box
@@ -219,7 +230,11 @@ const CreateMovie = () => {
                     width={0}
                     alt={formData.poster}
                     sizes="100vw"
-                    style={{ width: "100%", height: "100%", borderRadius:"12px" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "12px",
+                    }}
                   />
                 )
               ) : formData.poster ? (
@@ -359,7 +374,11 @@ const CreateMovie = () => {
                       width={0}
                       alt={formData.poster}
                       sizes="100vw"
-                      style={{ width: "100%", height: "100%", borderRadius:"12px" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "12px",
+                      }}
                     />
                   )
                 ) : formData.poster ? (
@@ -454,6 +473,7 @@ const CreateMovie = () => {
         </Box>
       </form>
     </Box>
+    : <></>
   );
 };
 
